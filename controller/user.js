@@ -98,13 +98,20 @@ exports.login_user = (req, res) => {
 };
 
 exports.current_user = (req, res) => {
-    res.json({
-        id : req.user.id,
-        email : req.user.email,
-        name : req.user.name,
-        avatar : req.user.avatar,
-        password : req.user.password
-    })
+
+    userModel
+        .findById(req.user.id)
+        .then(user => {
+            res.status(200).json({
+                message : "your current id",
+                userInfo : user
+            })
+        })
+        .catch(err => {
+            res.status(500).json({
+                message : err.message
+            })
+        })
 };
 
 exports.all_user = (req, res) => {
