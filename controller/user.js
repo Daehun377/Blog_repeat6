@@ -96,3 +96,38 @@ exports.login_user = (req, res) => {
             })
         })
 };
+
+exports.current_user = (req, res) => {
+    res.json({
+        id : req.user.id,
+        email : req.user.email,
+        name : req.user.name,
+        avatar : req.user.avatar,
+        password : req.user.password
+    })
+};
+
+exports.all_user = (req, res) => {
+
+    //요청하는 유저 정보 확인 => 만약 유저가 관리자 역할이 아니면 에러 , 맞으면 전체정보 반환
+
+    userModel
+        .findById(req.user.id)
+        .then(user => {
+            if(user.role !== "admin"){
+                res.status(400).json({
+                    message : "you are not admin"
+                })
+            }
+            else{
+                userModel
+                    .find()
+                    .then(users => res.status(200).json(users))
+            }
+        })
+        .catch(err => {
+            res.status(500).json({
+                message : err.message
+            })
+        })
+}

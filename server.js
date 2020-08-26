@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const dotEnv = require("dotenv");
+const passport = require("passport");
 dotEnv.config();
 const app = express();
 
@@ -14,7 +15,10 @@ require("./config/database");
 app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : false}));
+app.use(passport.initialize());
 
+//패스포트 함수 불러오기
+require("./config/passport")(passport);
 
 //라우터 정의
 const userRoute = require("./router/user");
