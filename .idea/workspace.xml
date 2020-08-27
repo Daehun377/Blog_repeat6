@@ -21,7 +21,11 @@
   <component name="ChangeListManager">
     <list default="true" id="458672f8-a68f-4fc0-8084-adaa9fdabf38" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controller/user.js" beforeDir="false" afterPath="$PROJECT_DIR$/controller/user.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/router/profile.js" beforeDir="false" afterPath="$PROJECT_DIR$/router/profile.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/server.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,6 +72,7 @@
       <updated>1598428984122</updated>
       <workItem from="1598428985238" duration="4595000" />
       <workItem from="1598488109636" duration="4699000" />
+      <workItem from="1598507645559" duration="3316000" />
     </task>
     <servers />
   </component>
@@ -88,5 +93,27 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state width="1259" height="182" key="GridCell.Tab.0.bottom" timestamp="1598508031745">
+      <screen x="0" y="23" width="1280" height="730" />
+    </state>
+    <state width="1259" height="182" key="GridCell.Tab.0.bottom/0.23.1280.730@0.23.1280.730" timestamp="1598508031745" />
+    <state width="1259" height="182" key="GridCell.Tab.0.center" timestamp="1598508031744">
+      <screen x="0" y="23" width="1280" height="730" />
+    </state>
+    <state width="1259" height="182" key="GridCell.Tab.0.center/0.23.1280.730@0.23.1280.730" timestamp="1598508031744" />
+    <state width="1259" height="182" key="GridCell.Tab.0.left" timestamp="1598508031743">
+      <screen x="0" y="23" width="1280" height="730" />
+    </state>
+    <state width="1259" height="182" key="GridCell.Tab.0.left/0.23.1280.730@0.23.1280.730" timestamp="1598508031743" />
+    <state width="1259" height="182" key="GridCell.Tab.0.right" timestamp="1598508031744">
+      <screen x="0" y="23" width="1280" height="730" />
+    </state>
+    <state width="1259" height="182" key="GridCell.Tab.0.right/0.23.1280.730@0.23.1280.730" timestamp="1598508031744" />
+    <state x="305" y="77" width="670" height="58" key="search.everywhere.popup" timestamp="1598513896910">
+      <screen x="0" y="23" width="1280" height="730" />
+    </state>
+    <state x="305" y="77" width="670" height="58" key="search.everywhere.popup/0.23.1280.730@0.23.1280.730" timestamp="1598513896910" />
   </component>
 </project>

@@ -1,5 +1,7 @@
 const jwt = require("jsonwebtoken");
 const userModel = require("../model/user");
+const sgMail = require("@sendgrid/mail");
+sgMail.setApiKey(process.env.MAIL_KEY);
 
 function tokenGenerator(payload) {
     return jwt.sign(payload, process.env.SECRET_TOKEN, {expiresIn : "1d"});
@@ -8,37 +10,42 @@ function tokenGenerator(payload) {
 
 exports.register_user = (req, res) => {
 
-    //이메일 유무 체크 -> 이메일 있을시 (이미 등록된 이메일이다) 없을시 패스워드 암호화 진행 -> 데이터베이스에 저장
+    //이메일 유무 체크 -> 있으면 이미 등록 되었다고 하고, 없으면 사용자 메일로 인증요청메일 보내기! (sendgrid 로)
 
     const {name, email , password} = req.body;
     userModel
         .findOne({email})
         .then(user => {
             if(user){
-                res.status(400).json({
+                return res.status(400).json({
                     message : "you are already registered"
                 })
             }
-            else{
-                const newUser = new userModel({
-                    name, email, password
-                });
+            else {
+                const payload = {name, email, password}; //입력값으로 페이로드 해주고
+                const token = jwt.sign(payload, process.env.JWT_ACCOUNT_ACTIVATION, {expiresIn: "10m"});
+                //토큰 유효 시간은 인증메일이니까 10분으로 짧게!
 
-                newUser
-                    .save()
-                    .then(user => {
-                        console.log(user);
+                const emailData = {
+                    from : process.env.EMAIL_FROM,
+                    to : email,
+                    subject : "Account Activation Link",
+                    html : `
+                        <h1 style = "background-color: beige">이것은 코딩연습으로 하는 이메일 인증메일 보내기 메일입니다. 혹시 잘못 갔을 경우, 스펨으로 처리되오니 신경쓰지 말아주시기 바랍니다.</h1>
+                        <p>${process.env.CLIENT_URL}/users/activate/${token}</p>
+                        <hr />
+                        <hr />
+                        <p style="background-color: beige">오늘도 행복한 하루 되세요</p>
+                        <p>This email may contain sensitive information</p>
+                        <p>${process.env.CLIENT_URL}</p>
+                    `
+                };
 
+                sgMail
+                    .send(emailData)
+                    .then(() => {
                         res.status(200).json({
-                            id : user.id,
-                            name : user.name,
-                            email : user.email,
-                            password : user.password,
-                            avatar : user.avatar,
-                            date : {
-                                createdDate : user.createdAt,
-                                updatedDate : user.updatedAt
-                            }
+                            message : `Email has been sent to ${email}`
                         })
                     })
                     .catch(err => {
@@ -46,9 +53,9 @@ exports.register_user = (req, res) => {
                             message : err.message
                         })
                     })
-
             }
         })
+
         .catch(err => {
             res.status(500).json({
                 message : err.message

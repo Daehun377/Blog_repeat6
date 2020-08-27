@@ -132,7 +132,7 @@ router.get("/", checkAuth,(req, res) => {
 router.delete("/", checkAuth, (req, res) => {
 
     profileModel
-        .deleteOne({user : req.user.id})
+        .findOneAndDelete({user : req.user.id})
         .then(() => {
             res.status(200).json({
                 message : "successful profile deleted"
