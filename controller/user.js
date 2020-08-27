@@ -137,4 +137,4 @@ exports.all_user = (req, res) => {
                 message : err.message
             })
         })
-}
+};

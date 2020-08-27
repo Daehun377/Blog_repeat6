@@ -22,10 +22,11 @@ require("./config/passport")(passport);
 
 //라우터 정의
 const userRoute = require("./router/user");
+const profileRoute = require("./router/profile");
 
 //라우팅
 app.use("/user", userRoute);
-
+app.use("/profile", profileRoute);
 
 
 
