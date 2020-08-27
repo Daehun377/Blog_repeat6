@@ -69,8 +69,81 @@ router.post("/register", checkAuth, (req, res) => {
 });
 
 
+//모든 프로필 불러오기
+//@route GET http://localhost:3000/profile/total
+//@desc  Get total Profiles
+//@access Public
 
+router.get("/total", (req, res) => {
 
+    profileModel
+        .find() //find는 배열로 나옴. findByOne / findById 등은 객체로 나온다.
+        .populate("user", "name email avatar") // 이렇게 해도 문제가 없네?? ["name", "email", "avatar"]로 해도 되네
+        .then(profiles => {
+            if(profiles.length === 0){
+                res.status(200).json({
+                    message : "there is no profile registered"
+                })
+            }
+            else{
+                res.status(200).json({
+                    count : profiles.length,
+                    profiles : profiles
+                })
+            }
+        })
+        .catch(err => {
+            res.status(500).json({
+                message : err.message
+            })
+        })
+});
+
+//개인 프로필 불러오기
+//@route GET http://localhost:3000/profile/
+//@desc  Get private Profiles
+//@access Private
+
+router.get("/", checkAuth,(req, res) => {
+
+   profileModel
+       .findOne({user : req.user.id})
+       .then(profile => {
+
+           if(!profile){
+               res.status(200).json({
+                   message : "there is no profile plz register"
+               })
+           }
+           res.status(200).json(profile)
+       })
+       .catch(err => {
+           res.status(500).json({
+               message : err.message
+           })
+       })
+});
+
+//개인 프로필 지우기
+//@route Delete http://localhost:3000/profile/
+//@desc  Delete private Profiles
+//@access Private
+
+router.delete("/", checkAuth, (req, res) => {
+
+    profileModel
+        .deleteOne({user : req.user.id})
+        .then(() => {
+            res.status(200).json({
+                message : "successful profile deleted"
+            })
+        })
+        .catch(err => {
+            res.status(500).json({
+                message : err.message
+            })
+        })
+});
 
 
 
