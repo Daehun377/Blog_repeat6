@@ -6,11 +6,11 @@ const profileModel = require("../model/profile");
 
 const checkAuth = passport.authenticate("jwt", {session : false});
 //프로필 등록
-//@route POST http://localhost:3000/profile/
-//@desc  Register profile from user
+//@route POST http://localhost:3000/profile/register
+//@desc  Register/Edit profile from user
 //@access Private
 
-router.post("/profile", checkAuth, (req, res) => {
+router.post("/register", checkAuth, (req, res) => {
 
     const profileFields = {}; //프로파일 필드 객체를 만들어줘서 프로파일에 들어갈 스키마들을 넣어준다.
 
@@ -29,20 +29,32 @@ router.post("/profile", checkAuth, (req, res) => {
     } //타입이 undefiled가 아니거나 입력값이 0 가 아닐경우, 배열을 , 기점으로 나눠서 넣어준다
 
 
-    //프로파일모델에 입력값 등록. 프로파일이 있으면 이미 프로파일이 있다고 하고 없으면 등록 한다.
+    //프로파일모델에 프로파일이 있으면 수정해서 업데이트 할수 있도록 해주고, 아예 없으면 새로 등록할 수 있게 해준다.
     profileModel
         .findOne({user : req.user.id})
         .then(profile => {
             if(profile){
-                return res.status(200).json({
-                    message : "profile already exists, please update your profile"
-                })
+
+                profileModel
+                    .findOneAndUpdate(
+                        {user : req.user.id},
+                        {$set : profileFields},
+                        {new : true}
+                    )
+                    .then(profile =>{
+                        res.status(200).json(profile)
+                    })
+                    .catch(err => {
+                        res.status(500).json({
+                            message : err.message
+                        })
+                    })
             }
             else{
                 new profileModel(profileFields)
                     .save()
                     .then(profile => res.status(200).json(profile))
-                    .catch(err => {
+                    .catch(err =>{
                         res.status(500).json({
                             message : err.message
                         })
