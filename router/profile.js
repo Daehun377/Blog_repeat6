@@ -231,4 +231,76 @@ router.post("/education", checkAuth, (req, res) => {
         })
 });
 
+
+//Delete Experience
+//@route Delete http://localhost:3000/profile/experience/:exp_id
+//@desc  Delete experience from profile
+//@access Private
+router.delete("/experience/:exp_id", checkAuth, (req,res) => {
+
+    //일단 모델에서 해당 유저 프로파일 찾은 다음에 그 프로파일에서 :exp_id 에 해당하는 걸 없애주고 프로파일 다시 저장
+    profileModel
+        .findOne({user : req.user.id})
+        .then(profile => {
+
+            const removeIndex = profile.experience
+                .map(item => item.id)
+                .indexOf(req.params.exp_id)
+
+
+            profile.experience.splice(removeIndex, 1)
+
+            profile
+                .save()
+                .then(profile => {
+                    res.status(200).json(profile)
+                })
+                .catch(err => {
+                    res.status(500).json({
+                        error : err.message
+                    })
+                })
+
+        })
+        .catch(err => {
+            res.status(500).json({
+                error : err.message
+            })
+        })
+});
+
+
+//Delete Education
+//@route Delete http://localhost:3000/profile/education/:exp_id
+//@desc  Delete experience from profile
+//@access Private
+router.delete("/education/:edu_id", (req, res) => {
+
+    profileModel
+        .findOne({user : req.user.id})
+        .then(profile =>{
+
+            const removeIndex = profile.education
+                .map(item => item.id)
+                .indexOf(req.params.edu_id);
+
+            profile.education.splice(removeIndex, 1);
+
+            profile
+                .save()
+                .then(profile => {
+                    res.status(200).json(profile)
+                })
+                .catch(err => {
+                    res.status(500).json({
+                        error : err.message
+                    })
+                })
+        })
+        .catch(err => {
+            res.status(500).json({
+                error : err.message
+            })
+        })
+});
 module.exports = router;
