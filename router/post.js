@@ -205,6 +205,80 @@ router.delete("/unlike/:post_id", checkAuth, (req, res )=> {
         })
 });
 
+//댓글 등록
+//@routes POST http://localhost:3000/post/comment/:post_id
+//@desc   Add comment to post
+//@access Private
+router.post("/comment/:post_id", checkAuth, (req, res) => {
 
+    const id = req.params.post_id;
+    //여기서 코멘트의 경우, 이름을 passposrt의 user에서 받아오는게 아니라, 직접 입력해 줄 수 있도록 req.body에서 받을 예정
+    postModel
+        .findById(id)
+        .then(post => {
 
+            const newComment = {
+                text : req.body.text,
+                name : req.body.name,
+                avatar : req.user.avatar,
+                user : req.user.id
+            };
+
+            post.comments.unshift(newComment);
+
+            post
+                .save()
+                .then(post => res.status(200).json(post))
+                .catch(err => {
+                    res.status(500).json({
+                        error : err.message
+                    })
+                })
+        })
+        .catch(err => {
+            res.status(500).json({
+                error : err.message
+            })
+        })
+});
+
+//댓글 지우기
+//@routes Delete http://localhost:3000/post/comment/:post_id/:comment_id
+//@desc   Remove comment from post
+//@access Private
+router.delete("/comment/:post_id/:comment_id", checkAuth,(req, res) => {
+
+    const id = req.params.post_id;
+
+    postModel
+        .findById(id)
+        .then(post => {
+            //comment.user 은 객체로 인식될 수 있기에, toString()을 꼭 해줘서 string타입으로 바꿔준다. 
+            if(post.comments.filter(comment => comment.user.toString() === req.user.id).length === 0){
+                return res.status(200).json({
+                    message : "you have no authorization this comment"
+                })
+            }
+            if(post.comments.filter(comment => comment._id.toString() === req.params.comment_id).length === 0){
+                return res.status(200).json({
+                    message : "no comment"
+                })
+            }
+            //Find commentIndex and remove the comment
+            const commentIndex = post.comments
+                .map(comment => comment._id.toString())
+                .indexOf(req.params.comment_id)
+
+            post.comments.splice(commentIndex, 1);
+
+            post
+                .save()
+                .then(post => res.status(200).json(post))
+        })
+        .catch(err => {
+            res.status(500).json({
+                error : err.message
+            })
+        })
+});
 module.exports = router;
