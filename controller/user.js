@@ -3,6 +3,8 @@ const userModel = require("../model/user");
 const sgMail = require("@sendgrid/mail");
 sgMail.setApiKey(process.env.MAIL_KEY);
 
+const {validationResult} = require("express-validator"); //결과 값이 담김.
+
 function tokenGenerator(payload) {
     return jwt.sign(payload, process.env.SECRET_TOKEN, {expiresIn : "1d"});
 };
@@ -13,12 +15,19 @@ exports.register_user = (req, res) => {
     //이메일 유무 체크 -> 있으면 이미 등록 되었다고 하고, 없으면 사용자 메일로 인증요청메일 보내기! (sendgrid 로)
 
     const {name, email , password} = req.body;
+
+    const errors = validationResult(req); //사용자 요청에 대한 유효결과값을 담겠다. 만약 패스되면 errors는 필요없음.
+
+    if(!errors.isEmpty()){ //내용이 있다면
+        return res.status(422).json(errors)
+    }
+
     userModel
         .findOne({email})
         .then(user => {
             if(user){
                 return res.status(400).json({
-                    message : "you are already registered"
+                    errors : "you are already registered"
                 })
             }
             else {
@@ -50,7 +59,7 @@ exports.register_user = (req, res) => {
                     })
                     .catch(err => {
                         res.status(500).json({
-                            message : err.message
+                            errors : err.message
                         })
                     })
             }
@@ -69,39 +78,49 @@ exports.login_user = (req, res) => {
 
     const {email, password} = req.body;
 
-    userModel
-        .findOne({email})
-        .then(user => {
-            if(!user){
-                res.status(400).json({
-                    message : "you have no account"
-                })
-            }
-            else{
-                user.comparePassword(password, (err,isMatch) => {
-                    if(err || isMatch === false){
+    // userModel
+    //     .findOne({email})
+    //     .then(user => {
+    //         if(!user){
+    //             res.status(400).json({
+    //                 message : "you have no account"
+    //             })
+    //         }
+
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.status(422).json(errors) //
+    }
+
+    else {
+
+        userModel
+            .findOne({email})
+            .then(user =>
+                user.comparePassword(password, (err, isMatch) => {
+                    if (err || isMatch === false) {
                         res.status(400).json({
-                            message : "password Incorrect"
+                            errors: "password Incorrect"
                         })
-                    }
-                    else{
-                        const payload = {id : user.id, name : user.name, email : user.email, avatar : user.avatar};
+                    } else {
+                        const payload = {id: user.id, name: user.name, email: user.email, avatar: user.avatar};
 
 
                         res.status(200).json({
-                            message : "login success",
-                            success : isMatch,
-                            tokenInfo : tokenGenerator(payload)
+                            message: "login success",
+                            success: isMatch,
+                            tokenInfo: tokenGenerator(payload)
                         })
                     }
                 })
-            }
-        })
-        .catch(err => {
-            res.status(500).json({
-                message : err.message
+            )
+            .catch(err => {
+                res.status(500).json({
+                    message: err.message
+                })
             })
-        })
+    }
 };
 
 exports.current_user = (req, res) => {

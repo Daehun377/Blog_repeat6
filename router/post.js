@@ -5,6 +5,7 @@ const postModel = require("../model/post");
 
 const checkAuth = passport.authenticate("jwt", {session : false});
 
+
 //게시글 올리기
 //@route POST http://localhost:3000/post/register
 //@desc  Register Post
@@ -253,7 +254,7 @@ router.delete("/comment/:post_id/:comment_id", checkAuth,(req, res) => {
     postModel
         .findById(id)
         .then(post => {
-            //comment.user 은 객체로 인식될 수 있기에, toString()을 꼭 해줘서 string타입으로 바꿔준다. 
+            //comment.user 은 객체로 인식될 수 있기에, toString()을 꼭 해줘서 string타입으로 바꿔준다.
             if(post.comments.filter(comment => comment.user.toString() === req.user.id).length === 0){
                 return res.status(200).json({
                     message : "you have no authorization this comment"
@@ -281,4 +282,6 @@ router.delete("/comment/:post_id/:comment_id", checkAuth,(req, res) => {
             })
         })
 });
+
+
 module.exports = router;
